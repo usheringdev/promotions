@@ -12,6 +12,20 @@ class PlanSerializer(serializers.ModelSerializer):
     benefit_type = serializers.ChoiceField(choices=BenefitType.choices)
     end_date = serializers.DateTimeField(required=False)
 
+    def validate(self, attrs):
+        """."""
+
+        start_date = attrs.get("start_date")
+        end_date = attrs.get("end_date")
+        if start_date < timezone.now().astimezone():
+            raise serializers.ValidationError(detail={"start_date": "Start date cannot be in past"})
+        if end_date:
+            if end_date < timezone.now().astimezone():
+                raise serializers.ValidationError("End must cannot be past time")
+            if end_date < start_date:
+                raise serializers.ValidationError("End date must be greater than start date")
+        return attrs
+
     class Meta:
         """."""
 
@@ -104,12 +118,16 @@ class CustomerGoalSerializer(serializers.ModelSerializer):
         user = attrs.get("user")
         deposited_amount = attrs.get("deposited_amount")
         started_date = attrs.get("started_date")
-        promotion = attrs.get("promotion")
+        promotion: Promotion = attrs.get("promotion")
 
         if not plan.active:
             raise serializers.ValidationError("Plan is not active")
         if plan.end_date is not None and plan.end_date < timezone.now().astimezone():
             raise serializers.ValidationError("Plan has expired")
+        if promotion.type == PromotionType.NUMBER and promotion.customer_goals.all().count() >= promotion.num:
+            raise serializers.ValidationError("Promotion has expired")
+        if promotion.type == PromotionType.TIME and timezone.now() > promotion.end_date:
+            raise serializers.ValidationError("Promotion has expired")
         if plan.start_date > timezone.now().astimezone():
             raise serializers.ValidationError("Plan has not started yet.")
         if deposited_amount <= 0:

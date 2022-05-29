@@ -27,7 +27,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    http_method_names = ["get", "post", "delete"]
+    http_method_names = ["post", "delete"]
 
     def perform_create(self, serializer):
         """."""
@@ -59,3 +59,15 @@ class ActivationStatusView(views.APIView):
         user.save()
         user_status = "activated" if user.is_active else "deactivated"
         return Response({"detail": f"user {user_status} successfully"})
+
+
+class UserDetailsView(views.APIView):
+    """."""
+
+    permission_classes = [IsAdmin | IsPartner | IsCustomer]
+
+    def get(self, request, *args, **kwargs):
+        """."""
+
+        user = CustomUserSerializer(request.user)
+        return Response({"user": user.data})

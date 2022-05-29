@@ -1,14 +1,15 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
+from django.utils.translation import gettext_lazy as _
 from django.db import models
 
 
 class UserRoleChoices(models.TextChoices):
     """."""
 
-    PARTNER = "partner", "Partner"
-    CUSTOMER = "customer", "Customer"
-    ADMIN = "admin", "Admin"
+    PARTNER = "partner", _("Partner")
+    CUSTOMER = "customer", _("Customer")
+    ADMIN = "admin", _("Admin")
 
 
 class CustomUserManager(BaseUserManager):

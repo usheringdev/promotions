@@ -73,6 +73,9 @@ class RedeemBenefitView(views.APIView):
         """."""
 
         token = kwargs.get("token")
+        user_tokens = [cg.benefit.token for cg in request.user.customer_goals.all()]
+        if token not in user_tokens:
+            return Response({"detail": "Yuo do not own this token"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             benefit = Benefit.objects.get(token=token)
         except Benefit.DoesNotExist:

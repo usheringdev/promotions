@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AnonymousUser
 from rest_framework import permissions
 
 from users.models import UserRoleChoices
@@ -6,29 +7,31 @@ from users.models import UserRoleChoices
 class PermissionMixin:
     """."""
 
-    role = None
+    curr_user_role = None
 
     def has_permission(self, request, view):
         """."""
 
         if request.method in permissions.SAFE_METHODS:
             return True
-        return request.user == self.role
+        if isinstance(request.user, AnonymousUser):
+            return False
+        return request.user.role == self.curr_user_role
 
 
-class IsAdmin(permissions.BasePermission, PermissionMixin):
+class IsAdmin(PermissionMixin, permissions.BasePermission):
     """."""
 
-    role = UserRoleChoices.ADMIN.value
+    curr_user_role = UserRoleChoices.ADMIN
 
 
-class IsPartner(permissions.BasePermission, PermissionMixin):
+class IsPartner(PermissionMixin, permissions.BasePermission):
     """."""
 
-    role = UserRoleChoices.PARTNER.value
+    curr_user_role = UserRoleChoices.PARTNER
 
 
-class IsCustomer(permissions.BasePermission, PermissionMixin):
+class IsCustomer(PermissionMixin, permissions.BasePermission):
     """."""
 
-    role = UserRoleChoices.CUSTOMER.value
+    curr_user_role = UserRoleChoices.CUSTOMER
