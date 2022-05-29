@@ -1,6 +1,7 @@
 from rest_framework import viewsets, views, status
 from rest_framework.response import Response
 
+from promotions.permissions import IsCustomer, IsPartner
 from .filters import PlanFilterSet, PromotionFilterSet
 from .models import Plan, Promotion, CustomerGoal, Benefit
 from .pagination import (
@@ -17,6 +18,8 @@ from .serializers import (
 
 class PlanViewSet(viewsets.ModelViewSet):
     """."""
+
+    permission_classes = [IsPartner]
     
     http_method_names = ["get", "post", "delete"]
     serializer_class = PlanSerializer
@@ -33,6 +36,8 @@ class PlanViewSet(viewsets.ModelViewSet):
 class PromotionViewSet(viewsets.ModelViewSet):
     """."""
 
+    permission_classes = [IsPartner]
+
     queryset = Promotion.objects.all()
     serializer_class = PromotionSerializer
     http_method_names = ["get", "post", "delete"]
@@ -47,6 +52,8 @@ class PromotionViewSet(viewsets.ModelViewSet):
 class CustomerGoalViewSet(viewsets.ModelViewSet):
     """."""
 
+    permission_classes = [IsCustomer]
+
     queryset = CustomerGoal.objects.all()
     serializer_class = CustomerGoalSerializer
     http_method_names = ["get", "post", "delete"]
@@ -59,6 +66,8 @@ class CustomerGoalViewSet(viewsets.ModelViewSet):
 
 class RedeemBenefitView(views.APIView):
     """."""
+
+    permission_classes = [IsCustomer]
 
     def delete(self, request, *args, **kwargs):
         """."""

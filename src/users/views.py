@@ -1,16 +1,17 @@
 from django.contrib.auth.models import AnonymousUser
 from rest_framework import views, viewsets, status
 from django.shortcuts import get_object_or_404
-from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 
-from promotions.permissions import IsAdmin
-from users.models import CustomUser, UserRoleChoices
+from promotions.permissions import IsAdmin, IsPartner, IsCustomer
+from users.models import CustomUser
 from users.serializers import CustomUserSerializer
 
 
 class LogOutView(views.APIView):
     """."""
+
+    permission_classes = [IsAdmin | IsPartner | IsCustomer]
 
     def delete(self, request, *args, **kwargs):
         """."""
