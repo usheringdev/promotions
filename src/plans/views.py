@@ -30,7 +30,6 @@ class PlanViewSet(viewsets.ModelViewSet):
     def perform_destroy(self, plan):
         plan.active = False
         plan.save()
-        plan.amounts_and_tenures.all().update(active=False)
 
 
 class PromotionViewSet(viewsets.ModelViewSet):
